@@ -14,3 +14,25 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: python -m unittest -v
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - run: python -m pip install build
+      - run: python -m build
+      - run: python -m pip install --force-reinstall dist/*.whl
+      - run: dma-watch --version && dma-watch --help && dma-dashboard --help
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-distributions
+          path: dist/*
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: docker build --tag dma-project-watch:ci .
+      - run: docker run --rm dma-project-watch:ci --version
+      - run: docker run --rm dma-project-watch:ci --help

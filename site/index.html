@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Release intelligence for the DMA ecosystem. Real GitHub API snapshots, transparent freshness and an automated delivery pipeline.">
+  <meta name="theme-color" content="#0b1117">
+  <title>DMA Watch — release intelligence</title>
+  <link rel="icon" href="mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="#overview"><img src="mark.svg" alt="" width="38" height="38"><span>DMA<span class="brand-light">WATCH</span><small>RELEASE INTELLIGENCE</small></span></a>
+    <div class="workspace-label">WORKSPACE <span>01</span></div>
+    <nav aria-label="Dashboard navigation">
+      <a class="nav-item active" href="#overview"><span class="nav-icon">◫</span>Overview<span class="nav-tag">LIVE DATA</span></a>
+      <a class="nav-item" href="#release-feed"><span class="nav-icon">↗</span>Release feed</a>
+      <a class="nav-item" href="#delivery"><span class="nav-icon">⌘</span>Delivery pipeline</a>
+    </nav>
+    <div class="sidebar-note"><span class="tiny-dot"></span>Public metadata only<p>No memory access.<br>No firmware changes.<br>No hidden telemetry.</p></div>
+    <a class="author" href="https://github.com/justGoty" target="_blank" rel="noopener noreferrer"><span class="avatar">G</span><span>Built by <strong>justGoty</strong><small>DMA / DEVOPS / WEB</small></span><span>↗</span></a>
+  </aside>
+  <main id="overview">
+    <header class="topbar"><span class="breadcrumb">Workspace <span>/</span> Overview</span><div class="topbar-actions"><a href="https://github.com/justGoty/dma-project-watch" target="_blank" rel="noopener noreferrer">Source code ↗</a><span class="version" id="tool-version">v—</span></div></header>
+    <div class="content">
+      <section class="hero">
+        <div><div class="eyebrow"><span class="tiny-dot"></span> DMA ECOSYSTEM OBSERVABILITY</div><h1>Signals, <span>not noise.</span></h1><p>A clear view of the releases that power your DMA stack.<br>Real upstream data. One small, transparent pipeline.</p></div>
+        <button class="refresh-button" id="refresh" type="button"><span aria-hidden="true">↻</span> Reload snapshot</button>
+      </section>
+      <div class="data-status" id="data-status" role="status"><span class="tiny-dot"></span><strong id="freshness-label">Loading snapshot</strong><span class="status-separator">/</span><span id="checked-at">Waiting for the data artifact</span><a href="snapshot.json" download>Export JSON ↓</a></div>
+      <section class="metrics" aria-label="Snapshot summary">
+        <article class="metric"><span>Tracked projects</span><strong id="total-count">—</strong><small>Focused DMA watchlist</small><div class="metric-icon">◫</div></article>
+        <article class="metric"><span>Published releases</span><strong id="release-count">—</strong><small>Latest stable releases found</small><div class="metric-icon green">↗</div></article>
+        <article class="metric"><span>Without a release</span><strong id="missing-count">—</strong><small>Missing, inaccessible or no release</small><div class="metric-icon">◎</div></article>
+        <article class="metric"><span>API errors</span><strong id="error-count">—</strong><small>Failures are shown, never hidden</small><div class="metric-icon">≋</div></article>
+      </section>
+      <section class="project-section" aria-labelledby="projects-title">
+        <div class="section-heading"><div><h2 id="projects-title">Your release radar</h2><p>The latest published version. Not a hardware compatibility verdict.</p></div><div class="filters"><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Find a project…" aria-label="Find a project"></label><select id="status-filter" aria-label="Filter by release status"><option value="all">All statuses</option><option value="release">Published release</option><option value="not-found-or-no-release">Without a release</option><option value="error">API error</option></select></div></div>
+        <div class="projects-grid" id="projects" aria-live="polite"><div class="empty-state">Loading real GitHub release metadata…</div></div>
+        <p class="empty-state" id="no-results" hidden>No projects match these filters.</p>
+      </section>
+      <div class="lower-grid">
+        <section class="panel" id="release-feed"><div class="panel-heading"><h2>Upstream release feed</h2><span>ACTUAL PUBLISH DATES</span></div><div class="timeline" id="timeline"><p class="muted">Loading releases…</p></div></section>
+        <section class="panel delivery" id="delivery"><div class="panel-heading"><h2>Built to ship</h2><span>DELIVERY ARCHITECTURE</span></div><p class="muted">A small DevOps project, with a visible path from API to dashboard.</p><div class="pipeline"><div><span class="step">01</span><strong>Collect</strong><small>GitHub REST API</small></div><span class="arrow">→</span><div><span class="step">02</span><strong>Normalize</strong><small>Versioned JSON</small></div><span class="arrow">→</span><div><span class="step">03</span><strong>Publish</strong><small>GitHub Pages</small></div></div><div class="delivery-links"><a href="https://github.com/justGoty/dma-project-watch/actions/workflows/tests.yml" target="_blank" rel="noopener noreferrer"><span>Automated checks</span><span>Inspect runs ↗</span></a><a href="https://github.com/justGoty/dma-project-watch/actions/workflows/dashboard.yml" target="_blank" rel="noopener noreferrer"><span>Daily snapshot deployment</span><span>Inspect runs ↗</span></a><a href="https://github.com/justGoty/dma-project-watch/releases" target="_blank" rel="noopener noreferrer"><span>Installable CLI releases</span><span>Download ↗</span></a></div><div class="code-line"><code>dma-watch --snapshot --json</code><button id="copy-command" type="button" aria-label="Copy CLI command">Copy</button></div><span class="copy-feedback" id="copy-feedback" role="status"></span></section>
+      </div>
+      <footer><span><span class="tiny-dot"></span> Open source, by design.</span><span>GitHub API snapshots · refreshes daily · <a href="https://github.com/justGoty/dma-project-watch/blob/main/LICENSE">MIT license</a></span></footer>
+    </div>
+  </main>
+</body>
+</html>

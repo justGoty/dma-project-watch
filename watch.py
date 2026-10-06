@@ -5,11 +5,15 @@ import json
 import os
 import re
 import sys
+from datetime import datetime, timezone
+from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
+__version__ = "0.2.0"
+
 DEFAULT_REPOS = ("ufrisk/MemProcFS", "ufrisk/LeechCore", "ufrisk/pcileech",
-                 "justGoty/goty-esp-dma-tarkov")
+                 "justGoty/goty-esp-dma-tarkov", "justGoty/dma-project-watch")
 REPO_PATTERN = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
 
 
@@ -43,10 +47,36 @@ def latest_release(repo, token=None):
         raise RuntimeError("Unexpected GitHub response") from None
 
 
+def collect(repos, token=None):
+    results = []
+    for repo in dict.fromkeys(repos):
+        validate_repo(repo)
+        try:
+            results.append(latest_release(repo, token))
+        except RuntimeError as error:
+            results.append({"repository": repo, "status": "error", "message": str(error)})
+    return results
+
+
+def snapshot(results):
+    return {"schema_version": 1, "generated_at": datetime.now(timezone.utc).isoformat(),
+            "tool_version": __version__, "source": "GitHub REST API",
+            "repositories": results}
+
+
+def write_json(path, data):
+    destination = Path(path)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", action="append", help="owner/repo; repeat for multiple projects")
     parser.add_argument("--json", action="store_true", help="print machine-readable JSON")
+    parser.add_argument("--output", help="save JSON to a file instead of stdout")
+    parser.add_argument("--snapshot", action="store_true", help="include timestamp and schema metadata")
+    parser.add_argument("--version", action="version", version=__version__)
     args = parser.parse_args(argv)
     repos = args.repo or DEFAULT_REPOS
     try:
@@ -54,16 +84,17 @@ def main(argv=None):
             validate_repo(repo)
     except ValueError as error:
         parser.error(str(error))
-    results = []
-    failed = False
-    for repo in repos:
+    results = collect(repos, os.environ.get("GITHUB_TOKEN"))
+    failed = any(item["status"] == "error" for item in results)
+    data = snapshot(results) if args.snapshot else results
+    if args.output:
         try:
-            results.append(latest_release(repo, os.environ.get("GITHUB_TOKEN")))
-        except RuntimeError as error:
-            failed = True
-            results.append({"repository": repo, "status": "error", "message": str(error)})
-    if args.json:
-        print(json.dumps(results, indent=2, ensure_ascii=False))
+            write_json(args.output, data)
+        except OSError:
+            print("Unable to write output file", file=sys.stderr)
+            return 1
+    elif args.json or args.snapshot:
+        print(json.dumps(data, indent=2, ensure_ascii=False))
     else:
         for item in results:
             print(item["repository"] + " | " + item.get("tag", item["status"]) +
