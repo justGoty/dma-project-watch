@@ -1,0 +1,3 @@
+include Dockerfile .dockerignore RELEASE_NOTES.md test_*.py
+recursive-include site *.html *.css *.js *.svg
+recursive-include .github *.yml
