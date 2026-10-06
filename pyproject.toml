@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=77,<81"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dma-project-watch"
+version = "0.2.0"
+description = "Release intelligence and a static dashboard for the DMA ecosystem"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "justGoty"}]
+dependencies = []
+
+[project.urls]
+Homepage = "https://justgoty.github.io/dma-project-watch/"
+Repository = "https://github.com/justGoty/dma-project-watch"
+Issues = "https://github.com/justGoty/dma-project-watch/issues"
+
+[project.scripts]
+dma-watch = "watch:main"
+dma-dashboard = "dashboard:main"
+
+[tool.setuptools]
+py-modules = ["watch", "dashboard"]
